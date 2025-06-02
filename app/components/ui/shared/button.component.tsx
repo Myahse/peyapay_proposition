@@ -44,10 +44,10 @@ const UIButton = ({
 
   // Style de base + variantes
   const getButtonClass = () => {
-    const base = `rounded-full justify-center items-center flex-row h-12 ${getWidthClass()}`;
+    const base = `rounded-full justify-center items-center flex-row h-12 w-full ${getWidthClass()}`;
     
     switch (variant) {
-      case 'primary': return `${base} bg-blue-500`;
+      case 'primary': return `${base} bg-yellow-400`;
       case 'secondary': return `${base} bg-blue-50`;
       case 'danger': return `${base} bg-red-500`;
       case 'success': return `${base} bg-green-500`;

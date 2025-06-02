@@ -1,5 +1,6 @@
-import { UIButton } from "./shared/button.component"
+import UIButton from "./shared/button.component"
+import PhoneInput from "./shared/input.component"
 
-export default {
-    UIButton: UIButton
-}
+
+
+export { UIButton, PhoneInput }
