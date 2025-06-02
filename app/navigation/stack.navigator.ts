@@ -17,7 +17,7 @@ const RootStack = createStackNavigator({
     auth: {
       if: () => true,
       screenOptions: {
-        headerShown: true
+        headerShown: false
       },
       screens: {
         login: {

@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { View, Modal, Text, TouchableOpacity } from 'react-native';
 import { Layout } from 'app/components/global/container.component';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from 'app/navigation';
@@ -7,10 +7,27 @@ import UIText from 'app/components/ui/shared/text.component';
 import UIButton from 'app/components/ui/shared/button.component';
 import React, { useState } from 'react';
 import PhoneInput from 'app/components/ui/shared/input.component';
+import { BlurView } from 'expo-blur';
+import { ModalComponent } from 'app/components/modals';
 
 export const SplashScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [phone, setPhone] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // Simple validation: must be 10 digits and start with '07'
+  const isPhoneValid = (num: string) => {
+    const digits = num.replace(/\D/g, '');
+    return /^07\d{8}$/.test(digits);
+  };
+
+  const handleNext = () => {
+    if (!isPhoneValid(phone)) {
+      setModalVisible(true);
+    } else {
+      navigation.navigate('login');
+    }
+  };
 
   return (
     <Layout>
@@ -26,8 +43,16 @@ export const SplashScreen = () => {
           <PhoneInput value={phone} onChange={setPhone} />
         </View>
         <View className={styles.blockBottom}>
-          <UIButton size='lg' variant='primary' title={'Suivant'} onPress={() => navigation.navigate('login')} />
+          <UIButton size='lg' variant='primary' title={'Suivant'} onPress={handleNext} />
         </View>
+        <ModalComponent visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+          <Text className="text-base font-bold text-center mb-2">Saisis numéro de téléphone</Text>
+          <Text className="text-xs text-center text-black mb-1">Votre numéro de téléphone n&apos;est pas correct.</Text>
+          <Text className="text-xs text-center text-black mb-4">Veuillez réessayer.</Text>
+          <TouchableOpacity className="mt-1" onPress={() => setModalVisible(false)}>
+            <Text className="text-black font-bold text-sm pt-6 text-center">Réessayer</Text>
+          </TouchableOpacity>
+        </ModalComponent>
       </View>
     </Layout>
   );
