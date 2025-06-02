@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
-import UIButton from 'app/components/ui/shared/button.component';
+import { UIButton } from 'app/components/ui';
 import UIText from 'app/components/ui/shared/text.component';
 import Logo from 'app/components/ui/shared/logo.component';
 import { MaterialIcons } from '@expo/vector-icons';
+import { ModalComponent } from 'app/components/modals';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import KeyboardComponent from 'app/components/ui/shared/keyboard.component';
+import { RootStackParamList } from 'app/navigation/stack.navigator';
 
 const logo = require('assets/icon.png'); // Logo for the screen
 
@@ -38,6 +43,11 @@ const PinScreen = () => {
   const [confirmPin, setConfirmPin] = useState('');
   const [isConfirm, setIsConfirm] = useState(false); // Whether user is entering confirmation PIN
   const [keypad, setKeypad] = useState<string[][]>([['', '', '', ''], ['', '', '', ''], ['', '', '', '']]);
+  const [showModal, setShowModal] = useState(false);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  // Check if PINs match when both are filled
+  const pinsMatch = pin.length === 4 && confirmPin.length === 4 && pin === confirmPin;
 
   // Generate a randomized keypad layout
   const generateKeypad = (): string[][] => {
@@ -82,8 +92,18 @@ const PinScreen = () => {
     }
   };
 
-  // Enable button only if both PINs are 4 digits and match
-  const isButtonEnabled = pin.length === 4 && confirmPin.length === 4 && pin === confirmPin;
+  // Enable button only if both PINs are 4 digits
+  const isButtonEnabled = pin.length === 4 && confirmPin.length === 4;
+
+  // Handle Suivant button press
+  const handleSuivant = () => {
+    if (!pinsMatch) {
+      setShowModal(true);
+    } else {
+      // Navigate to OTP screen
+      navigation.navigate('Otp');
+    }
+  };
 
   return (
     <View className="flex-1 bg-white px-6 pt-12 pb-4">
@@ -106,35 +126,38 @@ const PinScreen = () => {
         <PinRow value={confirmPin} />
       </View>
       {/* Keypad */}
-      <View className="items-center mb-16">
-        {keypad.map((row: string[], i: number) => (
-          <View key={i} className="flex-row ">
-            {row.map((key: string, j: number) => (
-              key === '' ? (
-                // Empty cell for alignment
-                <View key={`empty-${i}-${j}`} className="w-14 h-14 mx-2" />
-              ) : (
-                <TouchableOpacity
-                  key={`keypad-${i}-${j}`}
-                  className="w-14 h-14 mx-2 justify-center items-center"
-                  onPress={() => key === 'del' ? handleDelete() : handleKeyPress(key)}
-                  activeOpacity={0.6}
-                >
-                  {key === 'del' ? (
-                    <MaterialIcons name="backspace" size={24} color="#000" />
-                  ) : (
-                    <Text className="text-2xl font-bold text-black">{key}</Text>
-                  )}
-                </TouchableOpacity>
-              )
-            ))}
-          </View>
-        ))}
-      </View>
+      <KeyboardComponent keypad={keypad} onKeyPress={handleKeyPress} onDelete={handleDelete} />
       {/* Suivant button */}
       <View className="mb-8">
-        <UIButton title="Suivant" onPress={() => {}} variant="primary" size="lg" disabled={!isButtonEnabled} />
+        <UIButton 
+          title="Suivant" 
+          onPress={handleSuivant} 
+          variant="primary" 
+          size="lg" 
+          disabled={!isButtonEnabled} 
+        />
       </View>
+
+      {/* Error Modal */}
+      <ModalComponent
+        visible={showModal}
+        onRequestClose={() => setShowModal(false)}
+      >
+        <UIText
+          title="Code PIN INVALIDE"
+          subtitle="Le code pin est invalide. Réessayez une fois de plus"
+        />
+        <TouchableOpacity
+          onPress={() => {
+            setShowModal(false);
+            setConfirmPin('');
+            setIsConfirm(false);
+          }}
+          className="mt-4"
+        >
+          <Text className="text-black font-bold text-base">Réessayer</Text>
+        </TouchableOpacity>
+      </ModalComponent>
     </View>
   );
 };
