@@ -1,3 +1,4 @@
+// OTP Screen for entering and validating a 4-digit code
 import * as React from 'react';
 import { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
@@ -5,15 +6,16 @@ import { UIButton } from 'app/components/ui';
 import UIText from 'app/components/ui/shared/text.component';
 import Logo from 'app/components/ui/shared/logo.component';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import KeyboardComponent from 'app/components/ui/shared/keyboard.component';
 import OtpGroupIcon from 'app/components/ui/shared/OtpGroupIcon';
 import { ModalComponent } from 'app/components/modals';
 import CodeHolder from 'app/components/ui/shared/codeholder.component';
+import { RootStackParamList } from 'app/navigation/stack.navigator';
 
 const OTP_LENGTH = 4;
 
-// Utility to shuffle an array
+// Utility to shuffle an array (used for keypad randomization)
 function shuffle(array: string[]): string[] {
   let arr = array.slice();
   for (let i = arr.length - 1; i > 0; i--) {
@@ -24,10 +26,11 @@ function shuffle(array: string[]): string[] {
 }
 
 const OtpScreen = () => {
+  // State for OTP value, current input index, timer, and modal
   const [otp, setOtp] = useState('');
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [timer, setTimer] = useState(60);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [keypad, setKeypad] = useState<string[][]>([['', '', '', ''], ['', '', '', ''], ['', '', '', '']]);
   const [showModal, setShowModal] = useState(false);
@@ -47,7 +50,7 @@ const OtpScreen = () => {
     setKeypad(generateKeypad());
   }, []);
 
-  // Timer countdown
+  // Timer countdown for resend
   useEffect(() => {
     if (timer > 0) {
       intervalRef.current = setTimeout(() => setTimer(timer - 1), 1000);
@@ -66,7 +69,7 @@ const OtpScreen = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle OTP input
+  // Handle OTP input from keypad
   const handleKeyPress = (num: string) => {
     if (otp.length < OTP_LENGTH) {
       const newOtp = otp + num;
@@ -74,6 +77,7 @@ const OtpScreen = () => {
       setCurrentIndex(newOtp.length - 1);
     }
   };
+  // Handle delete key from keypad
   const handleDelete = () => {
     if (otp.length > 0) {
       const newOtp = otp.slice(0, -1);
@@ -82,13 +86,13 @@ const OtpScreen = () => {
     }
   };
 
-  // Handle resend
+  // Handle resend code (resets timer)
   const handleResend = () => {
     if (timer === 0) setTimer(60);
     // Add resend logic here
   };
 
-  // Handle continue
+  // Handle continue button: validate OTP and navigate or show error modal
   const handleContinue = () => {
     if (otp !== '1234') {
       setShowModal(true);
@@ -99,8 +103,6 @@ const OtpScreen = () => {
 
   return (
     <View className="flex-1 bg-white px-6 pt-8 pb-4">
-    
-     
       {/* Logo */}
       <View className="items-center mt-8 mb-4">
         <Logo />
@@ -114,9 +116,9 @@ const OtpScreen = () => {
       />
       {/* OtpGroupIcon above the input row */}
       <OtpGroupIcon style={{ alignSelf: 'center', marginVertical: 12 }} />
-      {/* OTP input row */}
+      {/* OTP input row (uses shared CodeHolder) */}
       <CodeHolder value={otp} currentIndex={currentIndex} length={OTP_LENGTH} />
-      {/* Keypad */}
+      {/* Keypad (randomized) */}
       <KeyboardComponent keypad={keypad} onKeyPress={handleKeyPress} onDelete={handleDelete} />
       {/* Resend and change number */}
       <View className="items-center mb-4">
@@ -137,7 +139,7 @@ const OtpScreen = () => {
           disabled={otp.length !== OTP_LENGTH}
         />
       </View>
-      {/* Error Modal */}
+      {/* Error Modal for invalid OTP */}
       <ModalComponent
         visible={showModal}
         onRequestClose={() => setShowModal(false)}

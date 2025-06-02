@@ -12,7 +12,7 @@ const defaultKeypad = [
   ['1', '2', '3'],
   ['4', '5', '6'],
   ['7', '8', '9'],
-  ['', '0', 'del'],
+  ['finger', '0', 'del'],
 ];
 
 const KeyboardComponent: React.FC<KeyboardComponentProps> = ({ keypad = defaultKeypad, onKeyPress, onDelete }) => {
