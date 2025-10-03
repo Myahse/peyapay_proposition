@@ -1,39 +1,31 @@
-// EventsCarousel Component
-// This component displays a horizontal scrollable carousel of event images.
-// It uses a custom hook for automatic scrolling and displays dots to indicate the current image.
 
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
 import { useCarousel } from 'app/utils/useCarousel';
 import EventCard from './EventCard';
 
-// Array of event images to be displayed in the carousel
 const eventImages = [
   require('assets/images/pub_1.jpeg'),
   require('assets/images/pub_2.jpeg'),
   require('assets/images/pub_3.jpeg'),
 ];
 
-// Add a fourth element for the EventCard
 const eventElements = [
   ...eventImages,
   { type: 'card', title: 'Event Title', subtitle: 'Event Subtitle' }
 ];
 
 const EventsCarousel: React.FC = () => {
-  // Custom hook to manage the current index of the displayed image
   const [eventIndex, setEventIndex] = useCarousel(eventElements.length, 3000);
   const scrollViewRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Effect to scroll to the current image index
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({ x: eventIndex * 320, animated: true });
     }
   }, [eventIndex]);
 
-  // Handle scroll event to update the current index
   const handleScroll = (event: any) => {
     const contentOffset = event.nativeEvent.contentOffset.x;
     const index = Math.round(contentOffset / 320);

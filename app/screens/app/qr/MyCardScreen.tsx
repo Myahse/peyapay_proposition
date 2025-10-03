@@ -1,4 +1,3 @@
-// Note: Make sure to install react-native-camera and link it properly in your project.
 import React from 'react';
 import { View } from 'react-native';
 import QrCard from 'app/components/ui/shared/QrCard';

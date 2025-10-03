@@ -13,7 +13,6 @@ import BiometricsOptions from 'app/components/ui/shared/BiometricsOptions';
 import BottomSheetModal from 'app/components/ui/shared/BottomSheetModal';
 import * as LocalAuthentication from 'expo-local-authentication';
 
-// PinRow: renders a row of 4 PIN holders inside a bordered container
 const PinRow = ({ value, isError }: { value: string; isError?: boolean }) => (
   <View className={`flex-row justify-center mb-4 border-2 ${isError ? 'border-red-500' : 'border-gray-400'} rounded-xl bg-white px-2 py-2 w-64 mx-auto`}>    
     {[0, 1, 2, 3].map(i => (
@@ -29,10 +28,9 @@ const PinRow = ({ value, isError }: { value: string; isError?: boolean }) => (
 );
 
 const PinScreen = () => {
-  // State for the first and confirmation PINs
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
-  const [isConfirm, setIsConfirm] = useState(false); // Whether user is entering confirmation PIN
+  const [isConfirm, setIsConfirm] = useState(false);
   const [keypad, setKeypad] = useState<string[][]>([['', '', '', ''], ['', '', '', ''], ['', '', '', '']]);
   const [showModal, setShowModal] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -43,45 +41,38 @@ const PinScreen = () => {
   const [pendingBiometricsOptions, setPendingBiometricsOptions] = useState(false);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  // Check if PINs match when both are filled
   const pinsMatch = pin.length === 4 && confirmPin.length === 4 && pin === confirmPin;
 
   useEffect(() => {
     setKeypad(generateKeypad());
   }, []);
 
-  // Check available biometrics when showing options
   useEffect(() => {
     if (showBiometricsOptions) {
       LocalAuthentication.supportedAuthenticationTypesAsync().then(setAvailableBiometrics);
     }
   }, [showBiometricsOptions]);
 
-  // Handle number press on keypad
   const handleKeyPress = (num: string): void => {
     if (!isConfirm) {
       if (pin.length < 4) {
         setPin(pin + num);
-        if (pin.length + 1 === 4) setIsConfirm(true); // Move to confirm after 4 digits
+        if (pin.length + 1 === 4) setIsConfirm(true);
       }
     } else {
       if (confirmPin.length < 4) {
         setConfirmPin(confirmPin + num);
-        // Clear error when user starts typing again
         if (showError) setShowError(false);
       }
     }
   };
 
-  // Handle delete key on keypad
   const handleDelete = (): void => {
     if (isConfirm) {
       if (confirmPin.length > 0) {
         setConfirmPin(confirmPin.slice(0, -1));
-        // Clear error when user starts deleting
         if (showError) setShowError(false);
       } else {
-        // If we're in confirm mode and the confirm PIN is empty, go back to first PIN
         setIsConfirm(false);
       }
     } else {
@@ -89,20 +80,16 @@ const PinScreen = () => {
     }
   };
 
-  // Enable button only if both PINs are 4 digits
   const isButtonEnabled = pin.length === 4 && confirmPin.length === 4;
 
-  // Handle Next button press
   const handleNext = () => {
     if (!pinsMatch) {
       setShowError(true);
     } else {
-      // Show biometrics modal instead of navigating directly
       setShowModal(true);
     }
   };
 
-  // Handle biometrics response
   const handleBiometricsResponse = (useBiometrics: boolean) => {
     setShowModal(false);
     if (useBiometrics) {
@@ -112,7 +99,6 @@ const PinScreen = () => {
     }
   };
 
-  // Show biometrics options only after modal is fully closed
   useEffect(() => {
     if (!showModal && pendingBiometricsOptions) {
       setShowBiometricsOptions(true);
@@ -120,12 +106,10 @@ const PinScreen = () => {
     }
   }, [showModal, pendingBiometricsOptions]);
 
-  // Handlers for biometrics options
   const handleSelectFingerprint = async () => {
     setShowBiometricsOptions(false);
-    setTimeout(() => setShowFingerprintSheet(true), 300); // slight delay for smooth transition
+    setTimeout(() => setShowFingerprintSheet(true), 300);
     setIsFingerprintLoading(true);
-    // Wait a moment for the sheet to appear
     setTimeout(async () => {
       try {
         const result = await LocalAuthentication.authenticateAsync({
