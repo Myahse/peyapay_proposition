@@ -4,7 +4,16 @@ module.exports = {
 
   presets: [require('nativewind/preset')],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        kamerik: ['Kamerik205-Book', 'sans-serif'],
+        bold: ['Kamerik205-Bold', 'sans-serif'],
+        heavy: ['Kamerik205-Heavy', 'sans-serif'],
+      },
+      colors: {
+        card: '#FAAF05',
+      },
+    },
   },
   plugins: [],
 };

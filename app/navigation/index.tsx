@@ -4,7 +4,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   splash: undefined;
-  login: undefined
+  Home: undefined;
+  Pin: undefined;
+  login: undefined;
 };
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

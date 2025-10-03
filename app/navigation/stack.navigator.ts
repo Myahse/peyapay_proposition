@@ -1,19 +1,18 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { LoginScreen } from 'app/screens/auth/login';
-import { RegisterScreen } from 'app/screens/auth/register';
-import { SplashScreen } from 'app/screens/splash';
-import OtpScreen from 'app/screens/auth/otp';
-import DailyCodeScreen from 'app/screens/auth/dailycode';
-// If you have a PinScreen, import it as well
-// import { PinScreen } from 'app/screens/auth/pin';
+import LoginScreen from '../screens/auth/login';
+import { SplashScreen } from 'app/screens/splash/index';
+import { HomeScreen } from 'app/screens/app/home';  
+import PinScreen from 'app/screens/auth/pin';
+import MyCardScreen from 'app/screens/app/qr/MyCardScreen';
+import RegisterConditionsScreen from '../screens/auth/RegisterConditionsScreen';
 
 export type RootStackParamList = {
   splash: undefined;
   login: undefined;
-  register: undefined;
-  Otp: undefined;
-  DailyCode: undefined;
-  // Add other routes as needed
+  Home: undefined;
+  Pin: undefined;
+  MyCard: undefined;
+  RegisterConditions: undefined;
 };
 
 const RootStack = createStackNavigator({
@@ -25,37 +24,20 @@ const RootStack = createStackNavigator({
     splash: {
       screen: SplashScreen,
     },
-    Otp: {
-      screen: OtpScreen,
+    login: {
+      screen: LoginScreen,
     },
-    DailyCode: {
-      screen: DailyCodeScreen,
+    Home: {
+      screen: HomeScreen,
     },
-    // If you want to add PinScreen:
-    // Pin: {
-    //   screen: PinScreen,
-    // },
-  },
-  groups: {
-    auth: {
-      if: () => true,
-      screenOptions: {
-        headerShown: false
-      },
-      screens: {
-        login: {
-          screen: LoginScreen
-        },
-        register: {
-          screen: RegisterScreen
-        }
-      },
+    Pin: {
+      screen: PinScreen,
     },
-    app: {
-      if: () => true,
-      screens: {
-        // ...
-      },
+    MyCard: {
+      screen: MyCardScreen,
+    },
+    RegisterConditions: {
+      screen: RegisterConditionsScreen,
     },
   },
 });

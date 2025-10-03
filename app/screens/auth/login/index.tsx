@@ -1,24 +1,12 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import PinScreen from '../pin';
 
-type ScreenContentProps = {
-  title: string;
-  path: string;
-  children?: React.ReactNode;
-};
-
-export const LoginScreen = ({ title, path, children }: ScreenContentProps) => {
+const LoginScreen = () => {
   return (
-    <View className={styles.container}>
-      
-    
+    <View className="flex-1">
       <PinScreen />
-      {children}
     </View>
   );
 };
-const styles = {
-  container: `flex-1 justify-center`,
-  
-  
-};
+
+export default LoginScreen; 
